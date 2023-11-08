@@ -3,7 +3,7 @@ import Button from './Button'
 
 const ButtonList = () => {
   return (
-    <div className="flex">
+    <div className="flex ">
       <Button name="All"/>
       <Button name= "Gaming"/>
       <Button name = "Songs"/>
@@ -12,7 +12,9 @@ const ButtonList = () => {
       <Button name="Cricket"/>
       <Button name="Cooking"/>
       <Button name="News"/>
-      <Button name="Valentines"/>
+      <Button name="Vlogs"/>
+      <Button name="Football"/>
+      <Button name="Programming"/>
     </div>
   )
 }
