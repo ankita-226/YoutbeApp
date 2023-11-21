@@ -2,7 +2,7 @@ import React, {useEffect} from 'react'
 import { useDispatch } from 'react-redux'
 import { closeMenu } from '../utils/appSlice'
 import { useSearchParams } from 'react-router-dom'
-
+import CommentsContainer from './CommentsContainer'
 const WatchPage = () => {
   let [searchParams] = useSearchParams();
   console.log(searchParams.get("v"))
@@ -13,6 +13,7 @@ const WatchPage = () => {
     dispatch(closeMenu())
   },[])
   return (
+    <div className='flex flex-col'>
     <div className=" ml-14 px-5 mt-10 ">
       <iframe width="900" height="500" 
       className="rounded-xl"
@@ -21,6 +22,8 @@ const WatchPage = () => {
       </iframe>
 
 
+    </div>
+    <CommentsContainer/>
     </div>
   )
 }

@@ -1,8 +1,50 @@
+import store from "../utils/store"
+import {useEffect, useState} from "react"
+
 import React from 'react'
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import { toggleMenu } from '../utils/appSlice'
+import { YOUTUBE_SEARCH_API } from "../utils/constant"
+import { cacheResults } from "../utils/SearchSlice"
 const Head = () => {
+   const [searchQuery, setSearchQuery] = useState("")
+   const [Suggestions, setSuggestions] = useState([])
+
+   const [showSuggestions, setShowSugestions] = useState(false)
+ 
+const searchCache = useSelector((store)=>store.search)
 const dispatch = useDispatch()
+  useEffect(()=>{
+//make an api call after every key press
+//but if the difference between 2 Api calls is <200ms
+//decline api call
+console.log(searchQuery)
+const timer = setTimeout(()=>
+ {
+   if(searchCache[searchQuery]){
+      setSuggestions(searchCache[searchQuery])
+   }
+   else{
+      getSearchSuggestions()
+   }
+   
+   } ,200)
+return() =>{
+   clearTimeout(timer)
+}
+  },[searchQuery])
+
+
+  const getSearchSuggestions = async()=>{
+   const data = await fetch(YOUTUBE_SEARCH_API+searchQuery)
+   const json = await data.json()
+   setSuggestions(json[1])
+
+   dispatch(cacheResults({
+      [searchQuery]:json[1],
+   }))
+  }
+   
    const toggleMenuHandler = () =>{
       dispatch(toggleMenu())
    }
@@ -20,11 +62,30 @@ const dispatch = useDispatch()
      </div>
 
      <div className="col-span-10  p-3">
-        <input
+       <div>
+       <input
         className="w-1/2 border border-gray-400 p-2 rounded-l-full ml-10"
-        type="text" placeholder="Search..."/>
+        type="text" placeholder="Search..."
+        value={searchQuery}
+        onChange ={(e)=>setSearchQuery(e.target.value)}
+        onFocus={() =>setShowSugestions(true)}
+        onBlur={()=>setShowSugestions(false)} />
+     
         <button className="border border-gray-400 py-2 px-5 rounded-r-full bg-gray-100">🔍 </button>
+       </div>
+       {showSuggestions && (
+         <div className="fixed bg-white py-2 px-5 ml-3 w-[37rem] shadow-lg rounded-lg">
+         <ul>
+            {Suggestions.map(s=><li key={s} className="py-2 px-3 shadow-sm hover:bg-gray-100">{s}</li>)}
+            
+         </ul>
+       </div>
+       )}
+       
+       
      </div>
+     
+    
      <div className="col-span-1">
         <img
         className="h-8"
@@ -32,6 +93,7 @@ const dispatch = useDispatch()
      </div>
 
    </div>
+   
   )
 }
 
